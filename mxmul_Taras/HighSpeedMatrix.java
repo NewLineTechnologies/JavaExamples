@@ -70,8 +70,9 @@ public class HighSpeedMatrix {
         return this.matrix;
     }
 
-    public void setMatrix(double[][] m) {
+    public void setMatrix(double[][]m) {
         this.matrix = m;
+        this.size = m.length;
     }
 
     public String getName() {
@@ -136,8 +137,8 @@ public class HighSpeedMatrix {
      */
     public void print(int n) {
         System.out.println(this.name + ":");
-        for (int i = 0; i < n - 1; i++) {
-            for (int j = 0; j < n - 1; j++) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
                 System.out.print(String.format("%9.3f", matrix[i][j]) + " ");
             }
             System.out.println();
@@ -150,17 +151,20 @@ public class HighSpeedMatrix {
      * @throws Exception
      */
     public void multiply(HighSpeedMatrix bMatrix) throws Exception {
-        //this.setSize(aMatrix.getSize());
-        //double[][] aM = aMatrix.getMatrix();
         double[][] bM = bMatrix.getMatrix();
 
-        for (int i = 0; i < size - 1; i++) {
-            for (int j = 0; j < size - 1; j++) {
+        double[] row = new double[bMatrix.getSize()];
+
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
                 double sum = 0;
-                for (int k = 0; k < size - 1; k++) {
+                for (int k = 0; k < size; k++) {
                     sum = sum + matrix[i][k] * bM[k][j];
                 }
-                matrix[i][j] = sum;
+                row[j] = sum;
+            }
+            for (int k = 0; k < size; k++) {
+                matrix[i][k] = row[k];
             }
         }
         return;
@@ -199,19 +203,24 @@ public class HighSpeedMatrix {
      *Matrix row multiplication
      * Result is written to the same row of current matrix
      *
-     * @param row - row number
+     * @param rowN - row number
      * @param bMatrix
      * @throws Exception
      */
-    public void multiplyRow(int row, HighSpeedMatrix bMatrix) throws Exception {
+    public void multiplyRow(int rowN, HighSpeedMatrix bMatrix) throws Exception {
         double[][] bM = bMatrix.getMatrix();
+        double[] row = new double[bMatrix.getSize()];
 
-        for (int j = 0; j < size - 1; j++) {
+        for (int j = 0; j < size; j++) {
             double sum = 0;
-            for (int k = 0; k < size - 1; k++) {
-                sum = sum + matrix[row][k] * bM[k][j];
+            for (int k = 0; k < size; k++) {
+                sum = sum + matrix[rowN][k] * bM[k][j];
             }
-            matrix[row][j] = sum;
+//            matrix[rowN][j] = sum;
+            row[j] = sum;
+        }
+        for (int k = 0; k < size; k++) {
+            matrix[rowN][k] = row[k];
         }
         return;
 
